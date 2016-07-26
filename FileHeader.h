@@ -8,23 +8,34 @@
 
 #include <cstdint>
 
-class FileHeader {
+class __attribute__((__packed__)) FileHeader{
+
 private:
-    uint16_t BfType;
-    uint32_t BfSize;             //tamanho total do arquivo (em bytes)
-    uint32_t BfOffSetBits;       //Deslocamento até o mapa de bits
+    unsigned char magic[2];
+    uint32_t filesz;
+    uint16_t creator1;
+    uint16_t creator2;
+    uint32_t bmp_offset;
+
 public:
-    uint16_t getBfType() const;
+    const unsigned char *getMagic() const;
 
-    void setBfType(uint16_t BfType);
+    uint32_t getFilesz() const;
 
-    uint32_t getBfSize() const;
+    void setFilesz(uint32_t filesz);
 
-    void setBfSize(uint32_t BfSize);
+    uint16_t getCreator1() const;
 
-    uint32_t getBfOffSetBits() const;
+    void setCreator1(uint16_t creator1);
 
-    void setBfOffSetBits(uint32_t BfOffSetBits);
+    uint16_t getCreator2() const;
+
+    void setCreator2(uint16_t creator2);
+
+    uint32_t getBmp_offset() const;
+
+    void setBmp_offset(uint32_t bmp_offset);
+
 
 };
 

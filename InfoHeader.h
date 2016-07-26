@@ -9,28 +9,63 @@
 class infoHeader{
 
 private:
-    uint32_t BiWidth;
-    //largura da imagem (em pixels)
-    uint32_t BiHeight;        //altura da imagem (em pixels)
-    uint16_t BiBitCount;      //numero de bits por cor (define o numero de cores da imagem)
-    //uint32_t BiSizeImag;      //(?) precisa?
-    uint32_t BiClrImportant;
+    uint32_t width;
+    uint32_t height;
+    uint16_t nplanes;
+    uint16_t bitspp;
+    uint32_t compress_type;
+    uint32_t bmp_bytesz;
+    uint32_t hres;
+    uint32_t vres;
+    uint32_t ncolors;
+    uint32_t nimpcolors;
+    uint32_t header_sz;
 public:
-    uint32_t getBiWidth() const;
+    uint32_t getHeader_sz() const;
 
-    void setBiWidth(uint32_t BiWidth);
+    void setHeader_sz(uint32_t header_sz);
 
-    uint32_t getBiHeight() const;
+    uint32_t getWidth() const;
 
-    void setBiHeight(uint32_t BiHeight);
+    void setWidth(uint32_t width);
 
-    uint16_t getBiBitCount() const;
+    uint32_t getHeight() const;
 
-    void setBiBitCount(uint16_t BiBitCount);
+    void setHeight(uint32_t height);
 
-    uint32_t getBiClrImportant() const;
+    uint16_t getNplanes() const;
 
-    void setBiClrImportant(uint32_t BiClrImportant);
+    void setNplanes(uint16_t nplanes);
+
+    uint16_t getBitspp() const;
+
+    void setBitspp(uint16_t bitspp);
+
+    uint32_t getCompress_type() const;
+
+    void setCompress_type(uint32_t compress_type);
+
+    uint32_t getBmp_bytesz() const;
+
+    void setBmp_bytesz(uint32_t bmp_bytesz);
+
+    uint32_t getHres() const;
+
+    void setHres(uint32_t hres);
+
+    uint32_t getVres() const;
+
+    void setVres(uint32_t vres);
+
+    uint32_t getNcolors() const;
+
+    void setNcolors(uint32_t ncolors);
+
+    uint32_t getNimpcolors() const;
+
+    void setNimpcolors(uint32_t nimpcolors);
+
+
 
 };
 

@@ -4,26 +4,38 @@
 
 #include "FileHeader.h"
 
-uint16_t FileHeader::getBfType() const {
-    return BfType;
+const unsigned char *FileHeader::getMagic() const {
+    return magic;
 }
 
-void FileHeader::setBfType(uint16_t BfType) {
-    FileHeader::BfType = BfType;
+uint32_t FileHeader::getFilesz() const {
+    return filesz;
 }
 
-uint32_t FileHeader::getBfSize() const {
-    return BfSize;
+void FileHeader::setFilesz(uint32_t filesz) {
+    FileHeader::filesz = filesz;
 }
 
-void FileHeader::setBfSize(uint32_t BfSize) {
-    FileHeader::BfSize = BfSize;
+uint16_t FileHeader::getCreator1() const {
+    return creator1;
 }
 
-uint32_t FileHeader::getBfOffSetBits() const {
-    return BfOffSetBits;
+void FileHeader::setCreator1(uint16_t creator1) {
+    FileHeader::creator1 = creator1;
 }
 
-void FileHeader::setBfOffSetBits(uint32_t BfOffSetBits) {
-    FileHeader::BfOffSetBits = BfOffSetBits;
+uint16_t FileHeader::getCreator2() const {
+    return creator2;
+}
+
+void FileHeader::setCreator2(uint16_t creator2) {
+    FileHeader::creator2 = creator2;
+}
+
+uint32_t FileHeader::getBmp_offset() const {
+    return bmp_offset;
+}
+
+void FileHeader::setBmp_offset(uint32_t bmp_offset) {
+    FileHeader::bmp_offset = bmp_offset;
 }
