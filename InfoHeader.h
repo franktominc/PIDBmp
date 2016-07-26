@@ -6,7 +6,7 @@
 #define PID_INFOHEADER1_H
 
 
-class infoHeader{
+class InfoHeader{
 
 private:
     uint32_t width;

@@ -5,90 +5,90 @@
 #include <cstdint>
 #include "InfoHeader.h"
 
-uint32_t infoHeader::getHeader_sz() const {
+uint32_t InfoHeader::getHeader_sz() const {
     return header_sz;
 }
 
-void infoHeader::setHeader_sz(uint32_t header_sz) {
-    infoHeader::header_sz = header_sz;
+void InfoHeader::setHeader_sz(uint32_t header_sz) {
+    InfoHeader::header_sz = header_sz;
 }
 
-uint32_t infoHeader::getWidth() const {
+uint32_t InfoHeader::getWidth() const {
     return width;
 }
 
-void infoHeader::setWidth(uint32_t width) {
-    infoHeader::width = width;
+void InfoHeader::setWidth(uint32_t width) {
+    InfoHeader::width = width;
 }
 
-uint32_t infoHeader::getHeight() const {
+uint32_t InfoHeader::getHeight() const {
     return height;
 }
 
-void infoHeader::setHeight(uint32_t height) {
-    infoHeader::height = height;
+void InfoHeader::setHeight(uint32_t height) {
+    InfoHeader::height = height;
 }
 
-uint16_t infoHeader::getNplanes() const {
+uint16_t InfoHeader::getNplanes() const {
     return nplanes;
 }
 
-void infoHeader::setNplanes(uint16_t nplanes) {
-    infoHeader::nplanes = nplanes;
+void InfoHeader::setNplanes(uint16_t nplanes) {
+    InfoHeader::nplanes = nplanes;
 }
 
-uint16_t infoHeader::getBitspp() const {
+uint16_t InfoHeader::getBitspp() const {
     return bitspp;
 }
 
-void infoHeader::setBitspp(uint16_t bitspp) {
-    infoHeader::bitspp = bitspp;
+void InfoHeader::setBitspp(uint16_t bitspp) {
+    InfoHeader::bitspp = bitspp;
 }
 
-uint32_t infoHeader::getCompress_type() const {
+uint32_t InfoHeader::getCompress_type() const {
     return compress_type;
 }
 
-void infoHeader::setCompress_type(uint32_t compress_type) {
-    infoHeader::compress_type = compress_type;
+void InfoHeader::setCompress_type(uint32_t compress_type) {
+    InfoHeader::compress_type = compress_type;
 }
 
-uint32_t infoHeader::getBmp_bytesz() const {
+uint32_t InfoHeader::getBmp_bytesz() const {
     return bmp_bytesz;
 }
 
-void infoHeader::setBmp_bytesz(uint32_t bmp_bytesz) {
-    infoHeader::bmp_bytesz = bmp_bytesz;
+void InfoHeader::setBmp_bytesz(uint32_t bmp_bytesz) {
+    InfoHeader::bmp_bytesz = bmp_bytesz;
 }
 
-uint32_t infoHeader::getHres() const {
+uint32_t InfoHeader::getHres() const {
     return hres;
 }
 
-void infoHeader::setHres(uint32_t hres) {
-    infoHeader::hres = hres;
+void InfoHeader::setHres(uint32_t hres) {
+    InfoHeader::hres = hres;
 }
 
-uint32_t infoHeader::getVres() const {
+uint32_t InfoHeader::getVres() const {
     return vres;
 }
 
-void infoHeader::setVres(uint32_t vres) {
-    infoHeader::vres = vres;
+void InfoHeader::setVres(uint32_t vres) {
+    InfoHeader::vres = vres;
 }
 
-uint32_t infoHeader::getNcolors() const {
+uint32_t InfoHeader::getNcolors() const {
     return ncolors;
 }
 
-void infoHeader::setNcolors(uint32_t ncolors) {
-    infoHeader::ncolors = ncolors;
+void InfoHeader::setNcolors(uint32_t ncolors) {
+    InfoHeader::ncolors = ncolors;
 }
 
-uint32_t infoHeader::getNimpcolors() const {
+uint32_t InfoHeader::getNimpcolors() const {
     return nimpcolors;
 }
 
-void infoHeader::setNimpcolors(uint32_t nimpcolors) {
-    infoHeader::nimpcolors = nimpcolors;
+void InfoHeader::setNimpcolors(uint32_t nimpcolors) {
+    InfoHeader::nimpcolors = nimpcolors;
 }
