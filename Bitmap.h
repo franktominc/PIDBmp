@@ -7,10 +7,13 @@
 
 
 #include <cstdint>
+#include <vector>
+
+using namespace std;
 
 class Bitmap {
 public:
-    uint8_t **bitmap;
+    vector<vector<uint8_t> > bitmap;
 };
 
 

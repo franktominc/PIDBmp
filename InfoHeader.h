@@ -9,6 +9,13 @@
 class InfoHeader{
 
 private:
+    uint32_t bsize;
+public:
+    uint32_t getBsize() const;
+
+    void setBsize(uint32_t bsize);
+
+private:
     uint32_t width;
     uint32_t height;
     uint16_t nplanes;

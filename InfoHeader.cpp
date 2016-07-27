@@ -92,3 +92,11 @@ uint32_t InfoHeader::getNimpcolors() const {
 void InfoHeader::setNimpcolors(uint32_t nimpcolors) {
     InfoHeader::nimpcolors = nimpcolors;
 }
+
+uint32_t InfoHeader::getBsize() const {
+    return bsize;
+}
+
+void InfoHeader::setBsize(uint32_t bsize) {
+    InfoHeader::bsize = bsize;
+}

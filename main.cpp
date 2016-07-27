@@ -1,7 +1,8 @@
 #include <iostream>
 #include <dirent.h>
 #include <list>
-#include "helpers.cpp"
+#include <libltdl/lt_system.h>
+#include "BitmapImage.h"
 
 using namespace std;
 
@@ -11,10 +12,11 @@ bool has_suffix(const std::string &str, const std::string &suffix)
            str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
 }
 
-int main(char argc, char* argv[]) {
+int main(int argc, char* argv[]) {
 
     string gabarito;
     string path;
+
 
     DIR* directory;
     struct dirent *ep;
@@ -38,6 +40,7 @@ int main(char argc, char* argv[]) {
         auto filepath = path + "/" + ep->d_name;
 
         if(has_suffix(filepath, ".bmp")){
+            cout << filepath << endl;
             gabaritos.push_back(filepath);
         }
 
@@ -47,6 +50,10 @@ int main(char argc, char* argv[]) {
         if(image == NULL){
             cerr << "Error(" << errno << ") opening " << (*it) << endl;
         }
+        string aux="";
+        aux+= *it;
+        BitmapImage teste = BitmapImage(aux);
+
     }
-    return 0;
+    return EXIT_SUCCESS;
 }
