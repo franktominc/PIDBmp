@@ -18,7 +18,7 @@ private:
     FileHeader fileHeader;
     ColorPallete colorPallete = ColorPallete(0);
     Bitmap bitmap;
-    void load24BitBMP(FILE* f, int colorDepth);
+    void loadBMP(FILE *f, int colorDepth);
     void loadPallete(FILE* f);
 public:
     BitmapImage(std::string path);

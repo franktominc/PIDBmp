@@ -18,13 +18,13 @@ BitmapImage::BitmapImage(string path) {
     if(infoHeader.getBitspp() != 24){
         loadPallete(f);
     }
-    load24BitBMP(f, infoHeader.getBitspp());
+    loadBMP(f, infoHeader.getBitspp());
 
     cout << "O arquivo foi carregado com sucesso" << flush;
     fclose(f);
 }
 
-void BitmapImage::load24BitBMP(FILE *f, int colorDepth) {
+void BitmapImage::loadBMP(FILE *f, int colorDepth) {
     bitmap.bitmap.resize(infoHeader.getHeight());
     for (int i = 0; i < infoHeader.getHeight(); i++) {
         bitmap.bitmap[i].resize((infoHeader.getWidth())*(colorDepth/8));
