@@ -11,6 +11,7 @@
 #include "InfoHeader.h"
 #include "ColorPallete.h"
 #include "Bitmap.h"
+#include "RGBColor.h"
 
 class BitmapImage {
 private:
@@ -22,8 +23,12 @@ private:
     void loadPallete(FILE* f);
 public:
     BitmapImage(std::string path);
+    void toGrayScale();
     //void print();
 
+    RGBColor getColorAt(int l, int c);
+
+    void saveBitMap(string path);
 };
 
 

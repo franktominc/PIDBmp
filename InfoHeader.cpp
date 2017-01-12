@@ -3,15 +3,10 @@
 //
 
 #include <cstdint>
+#include <ostream>
 #include "InfoHeader.h"
 
-uint32_t InfoHeader::getHeader_sz() const {
-    return header_sz;
-}
 
-void InfoHeader::setHeader_sz(uint32_t header_sz) {
-    InfoHeader::header_sz = header_sz;
-}
 
 uint32_t InfoHeader::getWidth() const {
     return width;
@@ -99,4 +94,20 @@ uint32_t InfoHeader::getBsize() const {
 
 void InfoHeader::setBsize(uint32_t bsize) {
     InfoHeader::bsize = bsize;
+}
+
+std::ostream &operator<<(std::ostream &stream, const InfoHeader &infoHeader) {
+    stream << "Header Size:" << std::hex << infoHeader.bsize<< "\n";
+    stream << std::hex << infoHeader.width << "\n";
+    stream << std::hex << infoHeader.height << "\n";
+    stream << std::hex << infoHeader.nplanes << "\n";
+    stream << std::dec << infoHeader.bitspp << "\n";
+    stream << std::hex << infoHeader.compress_type << "\n";
+    stream << std::hex << infoHeader.bmp_bytesz << "\n";
+    stream << std::hex << infoHeader.hres << "\n";
+    stream << std::hex << infoHeader.vres << "\n";
+    stream << std::hex << infoHeader.ncolors << "\n";
+    stream << std::hex << infoHeader.nimpcolors << "\n";
+
+    return stream;
 }

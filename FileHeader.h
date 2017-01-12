@@ -7,6 +7,8 @@
 
 
 #include <cstdint>
+#include <ostream>
+
 
 class __attribute__((__packed__)) FileHeader{
 
@@ -37,6 +39,7 @@ public:
     void setBmp_offset(uint32_t bmp_offset);
 
 
+    friend std::ostream& operator<< (std::ostream& stream, const FileHeader& fileHeader);
 };
 
 

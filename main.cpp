@@ -53,7 +53,7 @@ int main(int argc, char* argv[]) {
         string aux="";
         aux+= *it;
         BitmapImage teste = BitmapImage(aux);
-
+        //teste.toGrayScale();
     }
     return EXIT_SUCCESS;
 }

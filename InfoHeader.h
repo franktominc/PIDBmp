@@ -6,16 +6,10 @@
 #define PID_INFOHEADER1_H
 
 
-class InfoHeader{
+class __attribute__((__packed__)) InfoHeader{
 
 private:
     uint32_t bsize;
-public:
-    uint32_t getBsize() const;
-
-    void setBsize(uint32_t bsize);
-
-private:
     uint32_t width;
     uint32_t height;
     uint16_t nplanes;
@@ -26,11 +20,12 @@ private:
     uint32_t vres;
     uint32_t ncolors;
     uint32_t nimpcolors;
-    uint32_t header_sz;
-public:
-    uint32_t getHeader_sz() const;
 
-    void setHeader_sz(uint32_t header_sz);
+public:
+
+    uint32_t getBsize() const;
+
+    void setBsize(uint32_t bsize);
 
     uint32_t getWidth() const;
 
@@ -72,7 +67,7 @@ public:
 
     void setNimpcolors(uint32_t nimpcolors);
 
-
+    friend std::ostream& operator<< (std::ostream& stream, const InfoHeader& infoHeader);
 
 };
 

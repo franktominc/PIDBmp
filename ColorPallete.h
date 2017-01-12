@@ -7,12 +7,13 @@
 
 
 #include <cstdint>
+#include <vector>
 
 class ColorPallete {
 public:
     ColorPallete(int n);
 
-    uint32_t* colors;
+    std::vector<uint8_t> colors;
 };
 
 

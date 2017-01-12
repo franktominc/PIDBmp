@@ -2,6 +2,8 @@
 // Created by ftominc on 25/07/16.
 //
 
+#include <fstream>
+#include <iostream>
 #include "FileHeader.h"
 
 const unsigned char *FileHeader::getMagic() const {
@@ -38,4 +40,13 @@ uint32_t FileHeader::getBmp_offset() const {
 
 void FileHeader::setBmp_offset(uint32_t bmp_offset) {
     FileHeader::bmp_offset = bmp_offset;
+}
+
+std::ostream &operator<<(std::ostream &stream, const FileHeader &fileHeader) {
+    stream << "Magic " << std::hex << fileHeader.magic[0] << " " <<fileHeader.magic[1] << "\n";
+    stream << std::hex <<fileHeader.filesz << "\n";
+    stream << std::hex <<fileHeader.creator1 << "\n";
+    stream << std::hex <<fileHeader.creator2 << "\n";
+    stream << std::hex <<fileHeader.bmp_offset << "\n";
+    return stream;
 }

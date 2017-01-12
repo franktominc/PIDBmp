@@ -5,5 +5,5 @@
 #include "ColorPallete.h"
 
 ColorPallete::ColorPallete(int n) {
-    this->colors = new uint32_t[n];
+    this->colors.resize((unsigned long) (n * 4));
 }
