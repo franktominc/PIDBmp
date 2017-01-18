@@ -6,10 +6,19 @@
 
 using namespace std;
 
-bool has_suffix(const std::string &str, const std::string &suffix)
-{
+bool has_suffix(const std::string &str, const std::string &suffix) {
     return str.size() >= suffix.size() &&
            str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
+}
+
+string find_file_name(const std::string str){
+    unsigned long long startingPosition = 0;
+    for (auto i = 0; i < str.size(); i++) {
+        if(str[i] == '/' || str[i] == '\\'){
+            startingPosition = i+1;
+        }
+    }
+    return str.substr(startingPosition, str.size());
 }
 
 int main(int argc, char* argv[]) {
@@ -37,23 +46,20 @@ int main(int argc, char* argv[]) {
     }
     while((ep = readdir(directory))){
 
-        auto filepath = path + "/" + ep->d_name;
-
-        if(has_suffix(filepath, ".bmp")){
-            cout << filepath << endl;
-            gabaritos.push_back(filepath);
+        auto filePath = path + "/" + ep->d_name;
+        if(has_suffix(filePath, ".bmp")){
+            cout << filePath << endl;
+            gabaritos.push_back(filePath);
         }
 
     }
     for(auto it = gabaritos.begin(); it != gabaritos.end(); it++){
-        auto image = fopen((*it).c_str(), "rb+");
-        if(image == NULL){
-            cerr << "Error(" << errno << ") opening " << (*it) << endl;
-        }
         string aux="";
         aux+= *it;
-        BitmapImage teste = BitmapImage(aux);
-        //teste.toGrayScale();
+        string aux2="";
+        BitmapImage teste = BitmapImage(aux, find_file_name((*it)));
+        cout << teste.fileName << endl;
+        teste.toGrayScale();
     }
     return EXIT_SUCCESS;
 }

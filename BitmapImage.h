@@ -22,7 +22,9 @@ private:
     void loadBMP(FILE *f, int colorDepth);
     void loadPallete(FILE* f);
 public:
-    BitmapImage(std::string path);
+    string fileName;
+    string filePath;
+    BitmapImage(std::string path, std::string fileName);
     void toGrayScale();
     //void print();
 
