@@ -31,6 +31,12 @@ public:
     RGBColor getColorAt(int l, int c);
 
     void saveBitMap(string path);
+
+    void to2Colors();
+
+    void applyErosion();
+
+    void Erode(int times);
 };
 
 

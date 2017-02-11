@@ -59,7 +59,8 @@ int main(int argc, char* argv[]) {
         string aux2="";
         BitmapImage teste = BitmapImage(aux, find_file_name((*it)));
         cout << teste.fileName << endl;
-        teste.toGrayScale();
+        teste.Erode(5);
+
     }
     return EXIT_SUCCESS;
 }
