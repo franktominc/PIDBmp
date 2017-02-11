@@ -37,6 +37,8 @@ public:
     void applyErosion();
 
     void Erode(int times);
+
+    void applyDilation();
 };
 
 

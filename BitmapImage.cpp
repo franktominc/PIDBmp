@@ -281,3 +281,90 @@ void BitmapImage::Erode(int times) {
     }
 }
 
+void BitmapImage::applyDilation(){
+    vector<vector<uint8_t > > newBitmap;
+    newBitmap.resize(bitmap.bitmap.size());
+    int offset =4-((infoHeader.getWidth())%4);
+    if(offset == 4)
+        offset=0;
+    for (int i = 0; i < newBitmap.size(); i++) {
+        newBitmap[i].resize(bitmap.bitmap[0].size());
+        for (int j = 0; j < newBitmap[i].size()-offset; ++j) {
+            if(i == 0){
+                if(j == 0){
+                    if(bitmap.bitmap[i][j+1] == 0 || bitmap.bitmap[i+1][j+1] == 0 || bitmap.bitmap[i+1][j] == 0 || bitmap.bitmap[i][j] == 0){
+                        newBitmap[i][j] = 0;
+                    }else{
+                        newBitmap[i][j] = 255;
+                    }
+                }else if(j == newBitmap[i].size()-1){
+                    if(bitmap.bitmap[i][j-1] == 0 || bitmap.bitmap[i+1][j-1] == 0 || bitmap.bitmap[i+1][j] == 0 || bitmap.bitmap[i][j] == 0){
+                        newBitmap[i][j] = 0;
+                    }else{
+                        newBitmap[i][j] = 255;
+                    }
+                }else{
+                    if(bitmap.bitmap[i][j-1] == 0 ||
+                       bitmap.bitmap[i+1][j-1] == 0 ||
+                       bitmap.bitmap[i][j] == 0 ||
+                       bitmap.bitmap[i+1][j] == 0 ||
+                       bitmap.bitmap[i][j+1] == 0 ||
+                       bitmap.bitmap[i+1][j+1] == 0){
+                        newBitmap[i][j] = 0;
+                    }else{
+                        newBitmap[i][j] = 255;
+                    }
+                }
+            }else if(i == newBitmap.size()-1){
+                if(j == 0){
+                    if(bitmap.bitmap[i][j+1] == 0 || bitmap.bitmap[i-1][j+1] == 0 || bitmap.bitmap[i-1][j] == 0 ||bitmap.bitmap[i][j] == 0){
+                        newBitmap[i][j] = 0;
+                    }else{
+                        newBitmap[i][j] = 255;
+                    }
+                }else if(j == newBitmap[i].size()-1){
+                    if(bitmap.bitmap[i][j-1] == 0 || bitmap.bitmap[i-1][j-1] == 0 || bitmap.bitmap[i-1][j] == 0 || bitmap.bitmap[i][j] == 0){
+                        newBitmap[i][j] = 0;
+                    }else{
+                        newBitmap[i][j] = 255;
+                    }
+                }else{
+                    if(bitmap.bitmap[i][j-1] == 0 ||
+                       bitmap.bitmap[i-1][j-1] == 0 ||
+                       bitmap.bitmap[i][j] == 0 ||
+                       bitmap.bitmap[i-1][j] == 0 ||
+                       bitmap.bitmap[i][j+1] == 0 ||
+                       bitmap.bitmap[i-1][j+1] == 0){
+                        newBitmap[i][j] = 0;
+                    }else{
+                        newBitmap[i][j] = 255;
+                    }
+                }
+            }else{
+                if(bitmap.bitmap[i-1][j-1] == 0 ||
+                   bitmap.bitmap[i-1][j] == 0 ||
+                   bitmap.bitmap[i-1][j+1] == 0 ||
+                   bitmap.bitmap[i][j-1] == 0 ||
+                   bitmap.bitmap[i][j] == 0 ||
+                   bitmap.bitmap[i][j+1] == 0 ||
+                   bitmap.bitmap[i+1][j-1] == 0 ||
+                   bitmap.bitmap[i+1][j] == 0 ||
+                   bitmap.bitmap[i+1][j+1] == 0
+                        ){
+                    newBitmap[i][j] = 0;
+                }else{
+                    newBitmap[i][j] = 255;
+                }
+            }
+        }
+        for (int k = bitmap.bitmap[i].size() - offset; k < bitmap.bitmap[i].size(); ++k) {
+            newBitmap[i][k] = 0;
+        }
+    }
+
+    cout << "New Bitmap Size " << newBitmap.size() << "x" << bitmap.bitmap[0].size() << endl;
+    for (int k = 0; k < bitmap.bitmap.size(); k++) {
+        bitmap.bitmap[k].assign(newBitmap[k].begin(), newBitmap[k].end());
+    }
+    saveBitMap(filePath + "grey.bmp");
+}

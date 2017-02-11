@@ -60,6 +60,12 @@ int main(int argc, char* argv[]) {
         BitmapImage teste = BitmapImage(aux, find_file_name((*it)));
         cout << teste.fileName << endl;
         teste.Erode(5);
+        teste.applyDilation();
+        teste.applyDilation();
+        teste.applyDilation();
+        teste.applyDilation();
+        teste.applyDilation();
+        teste.applyDilation();
 
     }
     return EXIT_SUCCESS;
