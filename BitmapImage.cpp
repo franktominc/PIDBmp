@@ -80,24 +80,26 @@ RGBColor BitmapImage::getColorAt(int l, int c){
 }
 
 void BitmapImage::toGrayScale() {
-    cout << "Convertendo para escala de cinza" << endl;
+    //cout << "Convertendo para escala de cinza" << endl;
     int offset =4-((infoHeader.getWidth())%4);
     if(offset == 4)
         offset=0;
     this->infoHeader.setBitspp(8);
     this->fileHeader.setFilesz(54+pow(2,infoHeader.getBitspp())*4+(infoHeader.getWidth()+(offset))*infoHeader.getHeight());
-    this->fileHeader.setBmp_offset(54+pow(2,infoHeader.getBitspp()));
+    this->fileHeader.setBmp_offset(54+pow(2,infoHeader.getBitspp())*4);
     this->infoHeader.setBmp_bytesz(this->fileHeader.getFilesz()-this->fileHeader.getBmp_offset());
     ColorPallete cp = ColorPallete((int) pow(2.0, infoHeader.getBitspp()));
     for (int i = 0; i < pow(2.0,infoHeader.getBitspp()); i++) {
         cp.colors[i*4]=cp.colors[i*4+1]=cp.colors[i*4+2] =(uint8_t) i;
         cp.colors[i*4+3]=0;
     }
+    cp.colors[9] = 255;
+    cp.colors[8] = cp.colors[10] = cp.colors[11] = 0;
     cout << endl;
     vector<vector<uint8_t> > chuva;
 
     chuva.resize(infoHeader.getHeight());
-    cout << "offset: "<< offset <<endl;
+    //cout << "offset: "<< offset <<endl;
     for (int i = 0; i < chuva.size(); i++) {
         int j=0;
         chuva[i].resize(infoHeader.getWidth()+offset);
@@ -105,11 +107,11 @@ void BitmapImage::toGrayScale() {
             RGBColor color = getColorAt(i,j);
 
             j < chuva[i].size() - offset ?chuva[i][j]= uint8_t(color.getRed()*0.299+color.getGreen()*0.587+color.getBlue()*0.114): chuva[i][j] = 0;
-            chuva[i][j] < 65?chuva[i][j] = 0: chuva[i][j] = 255;
+            chuva[i][j] < 70?chuva[i][j] = 0: chuva[i][j] = 255;
 
         }
     }
-    cout << "O Tamanho do BMP em tons de cinza é " << chuva.size() << "x" << chuva[0].size() << endl;
+    //cout << "O Tamanho do BMP em tons de cinza é " << chuva.size() << "x" << chuva[0].size() << endl;
     colorPallete = cp;
     bitmap.bitmap.resize(0);
     bitmap.bitmap.resize(infoHeader.getHeight());
@@ -158,8 +160,8 @@ void BitmapImage::to2Colors() {
 }
 
 void BitmapImage::saveBitMap(string path){
-    cout << "teste" << endl;
-    cout << "O TAMANHO DESSE DEMONIO DOS INFERNOS É " << infoHeader.getHeight() << " x " << infoHeader.getWidth() << endl;
+    //cout << "teste" << endl;
+    //cout << "O TAMANHO DESSE DEMONIO DOS INFERNOS É " << infoHeader.getHeight() << " x " << infoHeader.getWidth() << endl;
     FILE* f = fopen(path.c_str(), "wb+");
     fwrite(&fileHeader,14,1,f);
     fwrite(&infoHeader,40,1,f);
@@ -275,7 +277,6 @@ void BitmapImage::applyErosion(){
 }
 
 void BitmapImage::Erode(int times) {
-    toGrayScale();
     for (int i = 0; i < times; ++i) {
         applyErosion();
     }
@@ -362,9 +363,124 @@ void BitmapImage::applyDilation(){
         }
     }
 
-    cout << "New Bitmap Size " << newBitmap.size() << "x" << bitmap.bitmap[0].size() << endl;
+    //cout << "New Bitmap Size " << newBitmap.size() << "x" << bitmap.bitmap[0].size() << endl;
     for (int k = 0; k < bitmap.bitmap.size(); k++) {
         bitmap.bitmap[k].assign(newBitmap[k].begin(), newBitmap[k].end());
     }
     saveBitMap(filePath + "grey.bmp");
+}
+
+void BitmapImage::Dilate(int times){
+    for (int i = 0; i < times; ++i) {
+        applyDilation();
+    }
+}
+
+void BitmapImage::findTopLeftRectangle(){
+
+    int c = infoHeader.getHeight();
+    for (int i = 30; ; ) {
+        for (int j = --c; j < infoHeader.getHeight(); j++,i++) {
+            if(bitmap.bitmap[j][i]==0){
+                topLeft = Point(j-(0.044585*infoHeader.getHeight()),i+(0.027027*infoHeader.getWidth()));
+                return;
+            }
+        }
+        i = 30;
+    }
+
+
+}
+
+void BitmapImage::findTopRightRectangle(){
+
+    int c = infoHeader.getWidth()-30;
+    for (int i = c; ; ) {
+        for (int j = infoHeader.getHeight()-1; i < infoHeader.getWidth()-30; j--,i++) {
+            if(bitmap.bitmap[j][i]==0){
+                topRight = Point(j-(0.044585*infoHeader.getHeight()),i-(0.027027*infoHeader.getWidth()));
+                return;
+            }
+        }
+        i = --c;
+    }
+
+}
+
+void BitmapImage::findBotLeftRectangle(){
+
+    int c = 0;
+    for (int i = 30; ; ) {
+        for (int j = c++; j >= 0 ; j--,i++) {
+            if(bitmap.bitmap[j][i]==0){
+                botLeft = Point(j+(0.044585*infoHeader.getHeight()),i+(0.027027*infoHeader.getWidth()));
+                return ;
+            }
+        }
+        i = 30;
+    }
+}
+
+void BitmapImage::drawRect(Point a, Point b) {
+    double m, y = 0;
+
+    if(a.x < b.x){
+        y = a.y;
+        m = 1.0*(b.y - a.y) / (b.x - a.x);
+        for (int x = a.x ; x < b.x ; ++x) {
+            bitmap.bitmap[x][y] = 2;
+            y+=m;
+        }
+
+    }else{
+        y = b.y;
+        m = 1.0*(a.y-b.y)/(a.x - b.x);
+        for (int x = b.x ; x < a.x ; ++x) {
+            bitmap.bitmap[x][y] = 2;
+            y+=m;
+        }
+    }
+    saveBitMap(filePath + "grey.bmp");
+}
+
+void BitmapImage::drawGrid(Point a, Point b) {
+    Point interpolado = Point((1-0.08181818181818)*topLeft.x+ 0.08181818181818*topRight.x,(1-0.08181818181818)*topLeft.y+ 0.08181818181818*topRight.y);
+    Point virtualSquare =
+    drawRect(interpolado,teste);
+
+    /*
+    double m, y = 0;
+    double mlr, angulo;
+
+
+    mlr = 1.0*(topLeft.y - topRight.y)/ (topLeft.x - topRight.x);
+    angulo = atan(-mlr);
+    a.y = (int) (a.y + infoHeader.getWidth() * 0.06944444444);
+    b.y = (int) (b.y + infoHeader.getWidth() * 0.06944444444);
+
+    a.x = (int) (a.x * cos(angulo) - a.y * sin(angulo));
+    a.y = (int) (a.x * sin(angulo) + a.y * cos(angulo));
+
+    b.x = (int) (b.x * cos(angulo) - b.y * sin(angulo));
+    b.y = (int) (b.x * sin(angulo) + b.y * cos(angulo));
+
+    printf("%d %d\n", a.x, a.y);
+    printf("%d %d\n", b.x, b.y);
+    if(a.x < b.x){
+        y = a.y;
+        m = 1.0*(b.y - a.y) / (b.x - a.x);
+        for (int x = a.x ; x < b.x ; ++x) {
+            bitmap.bitmap[x][y] = 2;
+            y+=m;
+        }
+
+    }else {
+        y = b.y;
+        m = 1.0 * (a.y - b.y) / (a.x - b.x);
+        for (int x = b.x; x < a.x; ++x) {
+            bitmap.bitmap[x][y] = 2;
+            y += m;
+        }
+    }
+    saveBitMap(filePath + "grey.bmp");*/
 }

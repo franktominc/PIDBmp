@@ -59,13 +59,17 @@ int main(int argc, char* argv[]) {
         string aux2="";
         BitmapImage teste = BitmapImage(aux, find_file_name((*it)));
         cout << teste.fileName << endl;
+        teste.toGrayScale();
         teste.Erode(5);
-        teste.applyDilation();
-        teste.applyDilation();
-        teste.applyDilation();
-        teste.applyDilation();
-        teste.applyDilation();
-        teste.applyDilation();
+        teste.Dilate(6);
+        teste.findTopLeftRectangle();
+        teste.findBotLeftRectangle();
+        teste.findTopRightRectangle();
+        teste.drawRect(teste.topLeft,teste.topRight);
+        teste.drawRect(teste.topLeft,teste.botLeft);
+        teste.drawRect(teste.botLeft,teste.topRight);
+        teste.drawGrid(teste.topLeft, teste.topRight);
+
 
     }
     return EXIT_SUCCESS;
