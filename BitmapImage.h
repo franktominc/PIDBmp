@@ -54,9 +54,9 @@ public:
 
     void findBotLeftRectangle();
 
-    void findAnswers(Point a, Point b);
+    void findAnswers(Point a);
 
-    void scanLine(Point a, Point b, int teste);
+    void scanLine(Point a, Point b);
 
     void floydSteinberg();
 

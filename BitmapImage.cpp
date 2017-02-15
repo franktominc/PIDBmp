@@ -3,11 +3,6 @@
 //
 
 #include "BitmapImage.h"
-#include "RGBColor.h"
-#include <iostream>
-#include <stdlib.h>
-#include <malloc.h>
-#include <cstdio>
 #include <cmath>
 
 using namespace std;
@@ -91,8 +86,8 @@ void BitmapImage::toGrayScale() {
         //cout << "O Tamanho do BMP em tons de cinza é " << chuva.size() << "x" << chuva[0].size() << endl;
         this->infoHeader.setBitspp(8);
         this->fileHeader.setFilesz(
-                54 + pow(2, infoHeader.getBitspp()) * 4 + (infoHeader.getWidth() + (offset)) * infoHeader.getHeight());
-        this->fileHeader.setBmp_offset(54 + pow(2, infoHeader.getBitspp()) * 4);
+                (uint32_t) (54 + pow(2.0, infoHeader.getBitspp()) * 4 + (infoHeader.getWidth() + (offset)) * infoHeader.getHeight()));
+        this->fileHeader.setBmp_offset((uint32_t) (54 + pow(2.0, infoHeader.getBitspp()) * 4));
         this->infoHeader.setBmp_bytesz(this->fileHeader.getFilesz() - this->fileHeader.getBmp_offset());
         ColorPallete cp = ColorPallete((int) pow(2.0, infoHeader.getBitspp()));
         for (int i = 0; i < pow(2.0, infoHeader.getBitspp()); i++) {
@@ -177,8 +172,8 @@ void BitmapImage::floydSteinberg(){
     }
     //cout << "O Tamanho do BMP em tons de cinza é " << chuva.size() << "x" << chuva[0].size() << endl;
     this->infoHeader.setBitspp(8);
-    this->fileHeader.setFilesz(54+pow(2,infoHeader.getBitspp())*4+(infoHeader.getWidth()+(offset))*infoHeader.getHeight());
-    this->fileHeader.setBmp_offset(54+pow(2,infoHeader.getBitspp())*4);
+    this->fileHeader.setFilesz((uint32_t) (54 + pow(2.0, infoHeader.getBitspp()) * 4 + (infoHeader.getWidth() + (offset)) * infoHeader.getHeight()));
+    this->fileHeader.setBmp_offset((uint32_t) (54 + pow(2.0, infoHeader.getBitspp()) * 4));
     this->infoHeader.setBmp_bytesz(this->fileHeader.getFilesz()-this->fileHeader.getBmp_offset());
     ColorPallete cp = ColorPallete((int) pow(2.0, infoHeader.getBitspp()));
     for (int i = 0; i < pow(2.0,infoHeader.getBitspp()); i++) {
@@ -196,8 +191,8 @@ void BitmapImage::floydSteinberg(){
 }
 
 void BitmapImage::loadPallete(FILE *f) {
-    colorPallete = ColorPallete(pow(2, infoHeader.getBitspp())*4);
-    for (int i = 0; i < pow(2, infoHeader.getBitspp())*4; i++) {
+    colorPallete = ColorPallete((int) (pow(2.0, infoHeader.getBitspp()) * 4));
+    for (int i = 0; i < pow(2.0, infoHeader.getBitspp())*4; i++) {
         fread(&colorPallete.colors[i],1,1, f);
     }
 }
@@ -278,7 +273,7 @@ void BitmapImage::applyErosion(){
                 }
             }
         }
-        for (int k = bitmap.bitmap[i].size() - offset; k < bitmap.bitmap[i].size(); ++k) {
+        for (unsigned long k = bitmap.bitmap[i].size() - offset; k < bitmap.bitmap[i].size(); ++k) {
             newBitmap[i][k] = 0;
         }
     }
@@ -371,7 +366,7 @@ void BitmapImage::applyDilation(){
                 }
             }
         }
-        for (int k = bitmap.bitmap[i].size() - offset; k < bitmap.bitmap[i].size(); ++k) {
+        for (unsigned long k = bitmap.bitmap[i].size() - offset; k < bitmap.bitmap[i].size(); ++k) {
             newBitmap[i][k] = 0;
         }
     }
@@ -394,7 +389,8 @@ void BitmapImage::findTopLeftRectangle(){
     for (int i = 30; ; ) {
         for (int j = --c; j < infoHeader.getHeight(); j++,i++) {
             if(bitmap.bitmap[j][i]==0){
-                topLeft = Point(j-(0.044585*infoHeader.getHeight()),i+(0.027027*infoHeader.getWidth()));
+                topLeft = Point((int) (j - (0.044585 * infoHeader.getHeight())),
+                                (int) (i + (0.027027 * infoHeader.getWidth())));
                 return;
             }
         }
@@ -410,7 +406,8 @@ void BitmapImage::findTopRightRectangle(){
     for (int i = c; ; ) {
         for (int j = infoHeader.getHeight()-1; i < infoHeader.getWidth()-30; j--,i++) {
             if(bitmap.bitmap[j][i]==0){
-                topRight = Point(j-(0.044585*infoHeader.getHeight()),i-(0.027027*infoHeader.getWidth()));
+                topRight = Point((int) (j - (0.044585 * infoHeader.getHeight())),
+                                 (int) (i - (0.027027 * infoHeader.getWidth())));
                 return;
             }
         }
@@ -425,7 +422,8 @@ void BitmapImage::findBotLeftRectangle(){
     for (int i = 30; ; ) {
         for (int j = c++; j >= 0 ; j--,i++) {
             if(bitmap.bitmap[j][i]==0){
-                botLeft = Point(j+(0.044585*infoHeader.getHeight()),i+(0.027027*infoHeader.getWidth()));
+                botLeft = Point((int) (j + (0.044585 * infoHeader.getHeight())),
+                                (int) (i + (0.027027 * infoHeader.getWidth())));
                 return ;
             }
         }
@@ -455,21 +453,23 @@ void BitmapImage::drawRect(Point a, Point b) {
     saveBitMap(filePath + "grey.bmp");
 }
 
-void BitmapImage::findAnswers(Point topLeft, Point b) {
+void BitmapImage::findAnswers(Point topLeft) {
     double k=0.09393939393939;
     double k0=0.08181818181818;
     Point squareOffset =Point((topLeft.x-botLeft.x),(topLeft.y-botLeft.y) );
     Point virtualSquare = Point(topRight.x-squareOffset.x,topRight.y-squareOffset.y);
     for (int i = 0; i < 10; i++) {
-        Point interpolado = Point((1-(k*i+k0))*topLeft.x+ (k*i+k0)*topRight.x,(1-k0-i*k)*topLeft.y+ (k*i+k0)*topRight.y);
-        Point interpoladoBot = Point((1-(k*i+k0))*botLeft.x+ (k*i+k0)*virtualSquare.x,(1-(k*i+k0))*botLeft.y+ (k*i+k0)*virtualSquare.y);
+        Point interpolado = Point((int) ((1 - (k * i + k0)) * topLeft.x + (k * i + k0) * topRight.x),
+                                  (int) ((1 - k0 - i * k) * topLeft.y + (k * i + k0) * topRight.y));
+        Point interpoladoBot = Point((int) ((1 - (k * i + k0)) * botLeft.x + (k * i + k0) * virtualSquare.x),
+                                     (int) ((1 - (k * i + k0)) * botLeft.y + (k * i + k0) * virtualSquare.y));
         //drawRect(interpolado,interpoladoBot);
-        scanLine(interpolado, interpoladoBot, i);
+        scanLine(interpolado, interpoladoBot);
     }
 }
 
-void BitmapImage::scanLine(Point top, Point bot, int teste) {
-    double y = top.x;
+void BitmapImage::scanLine(Point top, Point bot) {
+    double y;
     double porcentagem = 0;
     double m = 1.0*(top.y - bot.y) / (top.x - bot.x);;
     int maior=0, menor=100;
@@ -481,9 +481,9 @@ void BitmapImage::scanLine(Point top, Point bot, int teste) {
             porcentagem=(top.x-x)*100/(top.x-bot.x);
             //cout << "Porcentagem:" << porcentagem << endl;
             if(porcentagem > maior)
-                maior = porcentagem;
+                maior = (int) porcentagem;
             if(porcentagem<menor)
-                menor = porcentagem;
+                menor = (int) porcentagem;
         }
         y+=m;
     }
@@ -538,8 +538,8 @@ void BitmapImage::toBlackAndWhite() {
     }
     //cout << "O Tamanho do BMP em tons de cinza é " << chuva.size() << "x" << chuva[0].size() << endl;
     this->infoHeader.setBitspp(8);
-    this->fileHeader.setFilesz(54+pow(2,infoHeader.getBitspp())*4+(infoHeader.getWidth()+(offset))*infoHeader.getHeight());
-    this->fileHeader.setBmp_offset(54+pow(2,infoHeader.getBitspp())*4);
+    this->fileHeader.setFilesz((uint32_t) (54 + pow(2.0, infoHeader.getBitspp()) * 4 + (infoHeader.getWidth() + (offset)) * infoHeader.getHeight()));
+    this->fileHeader.setBmp_offset((uint32_t) (54 + pow(2.0, infoHeader.getBitspp()) * 4));
     this->infoHeader.setBmp_bytesz(this->fileHeader.getFilesz()-this->fileHeader.getBmp_offset());
     ColorPallete cp = ColorPallete((int) pow(2.0, infoHeader.getBitspp()));
     for (int i = 0; i < pow(2.0,infoHeader.getBitspp()); i++) {
@@ -553,5 +553,4 @@ void BitmapImage::toBlackAndWhite() {
     for (int k = 0; k < bitmap.bitmap.size(); k++) {
         bitmap.bitmap[k].assign(chuva[k].begin(), chuva[k].end());
     }
-    saveBitMap(filePath + "grey.bmp");
 }
