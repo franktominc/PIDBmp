@@ -28,7 +28,7 @@ BitmapImage::BitmapImage(string path, string fileName) {
 
     loadBMP(f, infoHeader.getBitspp());
 
-
+    //saveBitMap(filePath + "grey.bmp");
     fclose(f);
 }
 
@@ -52,52 +52,62 @@ void BitmapImage::loadBMP(FILE *f, int colorDepth) {
 
 RGBColor BitmapImage::getColorAt(int l, int c){
     uint8_t red, green, blue;
+    if(infoHeader.getBitspp() == 24) {
         blue = bitmap.bitmap[l][c * 3];
         green = bitmap.bitmap[l][c * 3 + 1];
         red = bitmap.bitmap[l][c * 3 + 2];
+    }else {
+        int index = bitmap.bitmap[l][c];
+        red = (uint8_t) index;
+        blue = (uint8_t) index;
+        green = (uint8_t) index;
+    }
     return RGBColor(red, green, blue);
 }
 
 void BitmapImage::toGrayScale() {
-    //cout << "Convertendo para escala de cinza" << endl;
-    int offset =4-((infoHeader.getWidth())%4);
-    if(offset == 4)
-        offset=0;
-    this->infoHeader.setBitspp(8);
-    this->fileHeader.setFilesz(54+pow(2,infoHeader.getBitspp())*4+(infoHeader.getWidth()+(offset))*infoHeader.getHeight());
-    this->fileHeader.setBmp_offset(54+pow(2,infoHeader.getBitspp())*4);
-    this->infoHeader.setBmp_bytesz(this->fileHeader.getFilesz()-this->fileHeader.getBmp_offset());
-    ColorPallete cp = ColorPallete((int) pow(2.0, infoHeader.getBitspp()));
-    for (int i = 0; i < pow(2.0,infoHeader.getBitspp()); i++) {
-        cp.colors[i*4]=cp.colors[i*4+1]=cp.colors[i*4+2] =(uint8_t) i;
-        cp.colors[i*4+3]=0;
-    }
-    cp.colors[9] = 255;
-    cp.colors[8] = cp.colors[10] = cp.colors[11] = 0;
-    //cout << endl;
-    vector<vector<uint8_t> > chuva;
+        int offset = 4 - ((infoHeader.getWidth()) % 4);
+        if (offset == 4)
+            offset = 0;
 
-    chuva.resize(infoHeader.getHeight());
-    //cout << "offset: "<< offset <<endl;
-    for (int i = 0; i < chuva.size(); i++) {
-        int j=0;
-        chuva[i].resize(infoHeader.getWidth()+offset);
-        for (j = 0; j < chuva[i].size(); j++) {
-            RGBColor color = getColorAt(i,j);
+        //cout << endl;
+        vector<vector<uint8_t> > chuva;
 
-            j < chuva[i].size() - offset ?chuva[i][j]= uint8_t(color.getRed()*0.299+color.getGreen()*0.587+color.getBlue()*0.114): chuva[i][j] = 0;
-            chuva[i][j] < 70?chuva[i][j] = 0: chuva[i][j] = 255;
+        chuva.resize(infoHeader.getHeight());
+        //cout << "offset: "<< offset <<endl;
+        cout << filePath << endl;
+        cout << "Bits: " << infoHeader.getBitspp() << endl;
+        for (int i = 0; i < chuva.size(); i++) {
+            int j = 0;
+            chuva[i].resize(infoHeader.getWidth() + offset);
+            for (j = 0; j < chuva[i].size(); j++) {
+                if (j < chuva[i].size() - offset) {
+                    RGBColor color = getColorAt(i, j);
+                    chuva[i][j] = uint8_t(color.getRed() * 0.299 + color.getGreen() * 0.587 + color.getBlue() * 0.114);
+                } else chuva[i][j] = 0;
 
+            }
         }
-    }
-    //cout << "O Tamanho do BMP em tons de cinza é " << chuva.size() << "x" << chuva[0].size() << endl;
-    colorPallete = cp;
-    bitmap.bitmap.resize(0);
-    bitmap.bitmap.resize(infoHeader.getHeight());
+        //cout << "O Tamanho do BMP em tons de cinza é " << chuva.size() << "x" << chuva[0].size() << endl;
+        this->infoHeader.setBitspp(8);
+        this->fileHeader.setFilesz(
+                54 + pow(2, infoHeader.getBitspp()) * 4 + (infoHeader.getWidth() + (offset)) * infoHeader.getHeight());
+        this->fileHeader.setBmp_offset(54 + pow(2, infoHeader.getBitspp()) * 4);
+        this->infoHeader.setBmp_bytesz(this->fileHeader.getFilesz() - this->fileHeader.getBmp_offset());
+        ColorPallete cp = ColorPallete((int) pow(2.0, infoHeader.getBitspp()));
+        for (int i = 0; i < pow(2.0, infoHeader.getBitspp()); i++) {
+            cp.colors[i * 4] = cp.colors[i * 4 + 1] = cp.colors[i * 4 + 2] = (uint8_t) i;
+            cp.colors[i * 4 + 3] = 0;
+        }
 
-    for (int k = 0; k < bitmap.bitmap.size(); k++) {
-        bitmap.bitmap[k].assign(chuva[k].begin(), chuva[k].end());
-    }
+        colorPallete = cp;
+        bitmap.bitmap.resize(0);
+        bitmap.bitmap.resize(infoHeader.getHeight());
+
+        for (int k = 0; k < bitmap.bitmap.size(); k++) {
+            bitmap.bitmap[k].assign(chuva[k].begin(), chuva[k].end());
+        }
+    saveBitMap(filePath + "grey.bmp");
 }
 
 void BitmapImage::saveBitMap(string path){
@@ -119,12 +129,77 @@ void BitmapImage::saveBitMap(string path){
     fclose(f);
 }
 
+void BitmapImage::floydSteinberg(){
+    //cout << "Convertendo para escala de cinza" << endl;
+    int offset =4-((infoHeader.getWidth())%4);
+    if(offset == 4)
+        offset=0;
+
+    //cout << endl;
+    vector<vector<uint8_t> > chuva;
+    vector<vector<double> > quantizationMatrix;
+
+    chuva.resize(infoHeader.getHeight());
+    quantizationMatrix.resize(infoHeader.getHeight());
+    //cout << "offset: "<< offset <<endl;
+    for (int i = 0; i < chuva.size(); i++) {
+        int j=0;
+        chuva[i].resize(infoHeader.getWidth()+offset);
+        quantizationMatrix[i].resize(chuva[i].size());
+        for (j = 0; j < chuva[i].size(); j++) {
+            RGBColor color = getColorAt(i,j);
+            uint8_t grayTone = uint8_t(color.getRed()*0.299+color.getGreen()*0.587+color.getBlue()*0.114);
+            if(j < chuva[i].size() - offset){
+                grayTone < 127 ? grayTone = 0: grayTone = 255;
+                chuva[i][j]= grayTone;
+                double quantizationError = color.getRed() - grayTone + color.getBlue() - grayTone + color.getGreen() - grayTone;
+                quantizationMatrix[i][j] = quantizationError/3;
+            }else{
+                chuva[i][j] = 0;
+            }
+        }
+    }
+    for (int l = 0; l < chuva.size(); l++) {
+        for (int i = 0; i < chuva[l].size(); i++) {
+            if(l< chuva.size()-1) {
+                chuva[l + 1][l] += (5.0) / 16 * quantizationMatrix[l][i];
+                if(i > 0) {
+                    chuva[l + 1][i-1] += (3.0) / 16 * quantizationMatrix[l][i];
+                }
+                if(i < chuva[l].size() - 1) {
+                    chuva[l+1][i+1] += (1.0)/16*quantizationMatrix[l][i];
+                }
+            }
+            if(i < chuva[l].size() - 1 ){
+                chuva[l][i+1] += (7.0)/16*quantizationMatrix[l][i];
+            }
+        }
+    }
+    //cout << "O Tamanho do BMP em tons de cinza é " << chuva.size() << "x" << chuva[0].size() << endl;
+    this->infoHeader.setBitspp(8);
+    this->fileHeader.setFilesz(54+pow(2,infoHeader.getBitspp())*4+(infoHeader.getWidth()+(offset))*infoHeader.getHeight());
+    this->fileHeader.setBmp_offset(54+pow(2,infoHeader.getBitspp())*4);
+    this->infoHeader.setBmp_bytesz(this->fileHeader.getFilesz()-this->fileHeader.getBmp_offset());
+    ColorPallete cp = ColorPallete((int) pow(2.0, infoHeader.getBitspp()));
+    for (int i = 0; i < pow(2.0,infoHeader.getBitspp()); i++) {
+        cp.colors[i*4]=cp.colors[i*4+1]=cp.colors[i*4+2] =(uint8_t) i;
+        cp.colors[i*4+3]=0;
+    }
+    colorPallete = cp;
+    bitmap.bitmap.resize(0);
+    bitmap.bitmap.resize(infoHeader.getHeight());
+
+    for (int k = 0; k < bitmap.bitmap.size(); k++) {
+        bitmap.bitmap[k].assign(chuva[k].begin(), chuva[k].end());
+    }
+    saveBitMap(filePath + "grey.bmp");
+}
+
 void BitmapImage::loadPallete(FILE *f) {
-    colorPallete = ColorPallete((fileHeader.getBmp_offset()-54)/4);
-    for (int i = 0; i < (fileHeader.getBmp_offset()-54)/4; i++) {
+    colorPallete = ColorPallete(pow(2, infoHeader.getBitspp())*4);
+    for (int i = 0; i < pow(2, infoHeader.getBitspp())*4; i++) {
         fread(&colorPallete.colors[i],1,1, f);
     }
-    //cout << "Lendo " << fileHeader.getBmp_offset()-54 << " bytes para a paleta" << endl;
 }
 
 void BitmapImage::applyErosion(){
@@ -438,4 +513,45 @@ void BitmapImage::scanLine(Point top, Point bot, int teste) {
             answers.push_back('X');
     }
 
+}
+
+void BitmapImage::toBlackAndWhite() {
+    //cout << "Convertendo para escala de cinza" << endl;
+    int offset =4-((infoHeader.getWidth())%4);
+    if(offset == 4)
+        offset=0;
+    //cout << endl;
+    vector<vector<uint8_t> > chuva;
+
+    chuva.resize(infoHeader.getHeight());
+    //cout << "offset: "<< offset <<endl;
+    for (int i = 0; i < chuva.size(); i++) {
+        int j=0;
+        chuva[i].resize(infoHeader.getWidth()+offset);
+        for (j = 0; j < chuva[i].size(); j++) {
+            RGBColor color = getColorAt(i,j);
+
+            j < chuva[i].size() - offset ?chuva[i][j]= uint8_t(color.getRed()*0.299+color.getGreen()*0.587+color.getBlue()*0.114): chuva[i][j] = 0;
+            chuva[i][j] < 70?chuva[i][j] = 0: chuva[i][j] = 255;
+
+        }
+    }
+    //cout << "O Tamanho do BMP em tons de cinza é " << chuva.size() << "x" << chuva[0].size() << endl;
+    this->infoHeader.setBitspp(8);
+    this->fileHeader.setFilesz(54+pow(2,infoHeader.getBitspp())*4+(infoHeader.getWidth()+(offset))*infoHeader.getHeight());
+    this->fileHeader.setBmp_offset(54+pow(2,infoHeader.getBitspp())*4);
+    this->infoHeader.setBmp_bytesz(this->fileHeader.getFilesz()-this->fileHeader.getBmp_offset());
+    ColorPallete cp = ColorPallete((int) pow(2.0, infoHeader.getBitspp()));
+    for (int i = 0; i < pow(2.0,infoHeader.getBitspp()); i++) {
+        cp.colors[i*4]=cp.colors[i*4+1]=cp.colors[i*4+2] =(uint8_t) i;
+        cp.colors[i*4+3]=0;
+    }
+    colorPallete = cp;
+    bitmap.bitmap.resize(0);
+    bitmap.bitmap.resize(infoHeader.getHeight());
+
+    for (int k = 0; k < bitmap.bitmap.size(); k++) {
+        bitmap.bitmap[k].assign(chuva[k].begin(), chuva[k].end());
+    }
+    saveBitMap(filePath + "grey.bmp");
 }

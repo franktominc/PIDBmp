@@ -23,6 +23,9 @@ string find_file_name(const std::string str){
 
 int main(int argc, char* argv[]) {
 
+
+
+
     string gabarito;
     string path;
 
@@ -59,7 +62,8 @@ int main(int argc, char* argv[]) {
         string aux2="";
         BitmapImage teste = BitmapImage(aux, find_file_name((*it)));
         cout << teste.fileName << endl;
-        teste.toGrayScale();
+        teste.floydSteinberg();
+        /*teste.toBlackAndWhite();
         teste.Erode(5);
         teste.Dilate(8);
         teste.findTopLeftRectangle();
@@ -70,6 +74,7 @@ int main(int argc, char* argv[]) {
             cout << *it;
         }
         cout << endl;
+         */
     }
     return EXIT_SUCCESS;
 }

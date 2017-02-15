@@ -57,6 +57,10 @@ public:
     void findAnswers(Point a, Point b);
 
     void scanLine(Point a, Point b, int teste);
+
+    void floydSteinberg();
+
+    void toBlackAndWhite();
 };
 
 
