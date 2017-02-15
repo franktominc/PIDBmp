@@ -20,10 +20,10 @@ private:
     FileHeader fileHeader;
     ColorPallete colorPallete = ColorPallete(0);
     Bitmap bitmap;
-
     void loadBMP(FILE *f, int colorDepth);
     void loadPallete(FILE* f);
 public:
+    vector<char> answers;
     Point topLeft;
     Point topRight;
     Point botLeft;
@@ -37,7 +37,6 @@ public:
 
     void saveBitMap(string path);
 
-    void to2Colors();
 
     void applyErosion();
 
@@ -55,7 +54,9 @@ public:
 
     void findBotLeftRectangle();
 
-    void drawGrid(Point a, Point b);
+    void findAnswers(Point a, Point b);
+
+    void scanLine(Point a, Point b, int teste);
 };
 
 

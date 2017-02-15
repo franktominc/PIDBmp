@@ -22,30 +22,19 @@ BitmapImage::BitmapImage(string path, string fileName) {
 
     fread(&infoHeader,1 , 40, f);
 
-    cout << fileHeader << endl << infoHeader;
-
     if(infoHeader.getBitspp() != 24){
-        cout << "Carregando a Paleta" << endl;
         loadPallete(f);
-        cout << "foi" << endl;
     }
 
-    cout << "Carregando o BMP" << endl;
     loadBMP(f, infoHeader.getBitspp());
 
 
-
-    cout << "O arquivo foi carregado com sucesso" << endl;
     fclose(f);
 }
 
 void BitmapImage::loadBMP(FILE *f, int colorDepth) {
-    cout << "Altura: " << dec << infoHeader.getHeight() << endl;
-    cout << "Largura: " << infoHeader.getWidth() << endl;
-    cout << "Color Depth: " << colorDepth << endl;
 
     bitmap.bitmap.resize(infoHeader.getHeight());
-    cout << "Criado" << endl;
     int offset =4-((infoHeader.getWidth()*3)%4);
     if(offset == 4)
         offset=0;
@@ -53,16 +42,6 @@ void BitmapImage::loadBMP(FILE *f, int colorDepth) {
         bitmap.bitmap[i].resize((infoHeader.getWidth())*(colorDepth/8)+(offset));
     }
 
-    cout << "O tamanho do bitmap criado eh "
-         << bitmap.bitmap.size()
-         << " x "
-         << bitmap.bitmap[0].size()
-         << endl;
-    cout << "O tamanho do bitmap segundo o cabecalho eh "
-         << infoHeader.getHeight()
-         << " x "
-         << infoHeader.getWidth()
-         << endl;
     for (int i = 0; i < bitmap.bitmap.size(); i++) {
         for (int j = 0; j < bitmap.bitmap[i].size(); j++) {
             fread(&bitmap.bitmap[i][j], 1, 1, f);
@@ -95,7 +74,7 @@ void BitmapImage::toGrayScale() {
     }
     cp.colors[9] = 255;
     cp.colors[8] = cp.colors[10] = cp.colors[11] = 0;
-    cout << endl;
+    //cout << endl;
     vector<vector<uint8_t> > chuva;
 
     chuva.resize(infoHeader.getHeight());
@@ -121,47 +100,7 @@ void BitmapImage::toGrayScale() {
     }
 }
 
-void BitmapImage::to2Colors() {
-    toGrayScale();
-    int offset =4-((infoHeader.getWidth())%4);
-    if(offset == 4)
-        offset=0;
-    this->infoHeader.setBitspp(8);
-    this->fileHeader.setFilesz(54+pow(2,infoHeader.getBitspp())*4+(infoHeader.getWidth()+(offset))*infoHeader.getHeight());
-    this->fileHeader.setBmp_offset(54+pow(2,infoHeader.getBitspp())*4);
-    this->infoHeader.setBmp_bytesz(this->fileHeader.getFilesz()-this->fileHeader.getBmp_offset());
-    ColorPallete cp = ColorPallete((int) pow(2.0, infoHeader.getBitspp()));
-
-    cp.colors[0]=cp.colors[1]=cp.colors[2] =(uint8_t) 0;
-    cp.colors[3]=0;
-    cp.colors[4]=cp.colors[5]=cp.colors[6] =(uint8_t) 255;
-    cp.colors[7]=0;
-    vector<vector<uint8_t> > chuva;
-    chuva.resize(infoHeader.getHeight());
-    for (int i = 0; i < chuva.size(); i++) {
-        int j=0;
-        chuva[i].resize(infoHeader.getWidth()+offset);
-        for (j = 0; j < chuva[i].size(); j++) {
-            RGBColor color = getColorAt(i,j);
-            uint8_t a = uint8_t(color.getRed()*0.299+color.getGreen()*0.587+color.getBlue()*0.114);
-            j < chuva[i].size() - offset ?(chuva[i][j]= (unsigned char) (a < 100 ? 0 : 1)) : chuva[i][j] = 0;
-
-
-        }
-    }
-    colorPallete = cp;
-    bitmap.bitmap.resize(0);
-    bitmap.bitmap.resize(infoHeader.getHeight());
-
-    for (int k = 0; k < bitmap.bitmap.size(); k++) {
-        bitmap.bitmap[k].assign(chuva[k].begin(), chuva[k].end());
-    }
-    saveBitMap(filePath + "grey.bmp");
-}
-
 void BitmapImage::saveBitMap(string path){
-    //cout << "teste" << endl;
-    //cout << "O TAMANHO DESSE DEMONIO DOS INFERNOS É " << infoHeader.getHeight() << " x " << infoHeader.getWidth() << endl;
     FILE* f = fopen(path.c_str(), "wb+");
     fwrite(&fileHeader,14,1,f);
     fwrite(&infoHeader,40,1,f);
@@ -177,7 +116,7 @@ void BitmapImage::saveBitMap(string path){
         }
     }
 
-    //fclose(f);
+    fclose(f);
 }
 
 void BitmapImage::loadPallete(FILE *f) {
@@ -185,7 +124,7 @@ void BitmapImage::loadPallete(FILE *f) {
     for (int i = 0; i < (fileHeader.getBmp_offset()-54)/4; i++) {
         fread(&colorPallete.colors[i],1,1, f);
     }
-    cout << "Lendo " << fileHeader.getBmp_offset()-54 << " bytes para a paleta" << endl;
+    //cout << "Lendo " << fileHeader.getBmp_offset()-54 << " bytes para a paleta" << endl;
 }
 
 void BitmapImage::applyErosion(){
@@ -269,11 +208,10 @@ void BitmapImage::applyErosion(){
         }
     }
 
-    cout << "New Bitmap Size " << newBitmap.size() << "x" << bitmap.bitmap[0].size() << endl;
+    //cout << "New Bitmap Size " << newBitmap.size() << "x" << bitmap.bitmap[0].size() << endl;
     for (int k = 0; k < bitmap.bitmap.size(); k++) {
         bitmap.bitmap[k].assign(newBitmap[k].begin(), newBitmap[k].end());
     }
-    saveBitMap(filePath + "grey.bmp");
 }
 
 void BitmapImage::Erode(int times) {
@@ -367,7 +305,6 @@ void BitmapImage::applyDilation(){
     for (int k = 0; k < bitmap.bitmap.size(); k++) {
         bitmap.bitmap[k].assign(newBitmap[k].begin(), newBitmap[k].end());
     }
-    saveBitMap(filePath + "grey.bmp");
 }
 
 void BitmapImage::Dilate(int times){
@@ -443,44 +380,62 @@ void BitmapImage::drawRect(Point a, Point b) {
     saveBitMap(filePath + "grey.bmp");
 }
 
-void BitmapImage::drawGrid(Point a, Point b) {
-    Point interpolado = Point((1-0.08181818181818)*topLeft.x+ 0.08181818181818*topRight.x,(1-0.08181818181818)*topLeft.y+ 0.08181818181818*topRight.y);
-    Point virtualSquare =
-    drawRect(interpolado,teste);
-
-    /*
-    double m, y = 0;
-    double mlr, angulo;
-
-
-    mlr = 1.0*(topLeft.y - topRight.y)/ (topLeft.x - topRight.x);
-    angulo = atan(-mlr);
-    a.y = (int) (a.y + infoHeader.getWidth() * 0.06944444444);
-    b.y = (int) (b.y + infoHeader.getWidth() * 0.06944444444);
-
-    a.x = (int) (a.x * cos(angulo) - a.y * sin(angulo));
-    a.y = (int) (a.x * sin(angulo) + a.y * cos(angulo));
-
-    b.x = (int) (b.x * cos(angulo) - b.y * sin(angulo));
-    b.y = (int) (b.x * sin(angulo) + b.y * cos(angulo));
-
-    printf("%d %d\n", a.x, a.y);
-    printf("%d %d\n", b.x, b.y);
-    if(a.x < b.x){
-        y = a.y;
-        m = 1.0*(b.y - a.y) / (b.x - a.x);
-        for (int x = a.x ; x < b.x ; ++x) {
-            bitmap.bitmap[x][y] = 2;
-            y+=m;
-        }
-
-    }else {
-        y = b.y;
-        m = 1.0 * (a.y - b.y) / (a.x - b.x);
-        for (int x = b.x; x < a.x; ++x) {
-            bitmap.bitmap[x][y] = 2;
-            y += m;
-        }
+void BitmapImage::findAnswers(Point topLeft, Point b) {
+    double k=0.09393939393939;
+    double k0=0.08181818181818;
+    Point squareOffset =Point((topLeft.x-botLeft.x),(topLeft.y-botLeft.y) );
+    Point virtualSquare = Point(topRight.x-squareOffset.x,topRight.y-squareOffset.y);
+    for (int i = 0; i < 10; i++) {
+        Point interpolado = Point((1-(k*i+k0))*topLeft.x+ (k*i+k0)*topRight.x,(1-k0-i*k)*topLeft.y+ (k*i+k0)*topRight.y);
+        Point interpoladoBot = Point((1-(k*i+k0))*botLeft.x+ (k*i+k0)*virtualSquare.x,(1-(k*i+k0))*botLeft.y+ (k*i+k0)*virtualSquare.y);
+        //drawRect(interpolado,interpoladoBot);
+        scanLine(interpolado, interpoladoBot, i);
     }
-    saveBitMap(filePath + "grey.bmp");*/
+}
+
+void BitmapImage::scanLine(Point top, Point bot, int teste) {
+    double y = top.x;
+    double porcentagem = 0;
+    double m = 1.0*(top.y - bot.y) / (top.x - bot.x);;
+    int maior=0, menor=100;
+    y = bot.y;;
+    //cout << "Teste:" << teste << endl;
+    //drawRect(top, bot);
+    for (int x = bot.x ; x < top.x ; ++x) {
+        if(bitmap.bitmap[x][y] == 0){
+            porcentagem=(top.x-x)*100/(top.x-bot.x);
+            //cout << "Porcentagem:" << porcentagem << endl;
+            if(porcentagem > maior)
+                maior = porcentagem;
+            if(porcentagem<menor)
+                menor = porcentagem;
+        }
+        y+=m;
+    }
+    if(maior-menor <20 && maior - menor > 0){
+        int media= (maior+menor)/2;
+        switch(media){
+            case 0 ... 20:
+                answers.push_back('A');
+                break;
+            case 21 ... 40:
+                answers.push_back('B');
+                break;
+            case 41 ... 60:
+                answers.push_back('C');
+                break;
+            case 61 ... 80:
+                answers.push_back('D');
+                break;
+            default:
+                answers.push_back('E');
+                break;
+        }
+    }else{
+        if(maior-menor==-100)
+            answers.push_back('O');
+        else
+            answers.push_back('X');
+    }
+
 }

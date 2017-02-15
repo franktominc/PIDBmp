@@ -61,16 +61,15 @@ int main(int argc, char* argv[]) {
         cout << teste.fileName << endl;
         teste.toGrayScale();
         teste.Erode(5);
-        teste.Dilate(6);
+        teste.Dilate(8);
         teste.findTopLeftRectangle();
         teste.findBotLeftRectangle();
         teste.findTopRightRectangle();
-        teste.drawRect(teste.topLeft,teste.topRight);
-        teste.drawRect(teste.topLeft,teste.botLeft);
-        teste.drawRect(teste.botLeft,teste.topRight);
-        teste.drawGrid(teste.topLeft, teste.topRight);
-
-
+        teste.findAnswers(teste.topLeft, teste.topRight);
+        for(auto it = teste.answers.begin(); it != teste.answers.end(); it++){
+            cout << *it;
+        }
+        cout << endl;
     }
     return EXIT_SUCCESS;
 }
